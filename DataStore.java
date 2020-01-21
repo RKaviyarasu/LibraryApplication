@@ -10,17 +10,20 @@ public class DataStore {
 	Map<String, Customer> customerDataStore = new HashMap<String, Customer>();
 	Map<String, ArrayList<CustomerBookDetails>> customerBook = new HashMap<String, ArrayList<CustomerBookDetails>>();
 	ArrayList<CustomerBookDetails> customerBookSelect;
-	
+	DataBaseConnection db = new DataBaseConnection();
 	public void addBookDetails(Book book) {
 		bookStore.put(book.getId(),  book);
+		db.addBooks(book);
 	}
 	
 	public void updateBookDetails(String id, Book updateBook) {
 		bookStore.put(id, updateBook);
+		db.updateBook(id, updateBook);
 	}
 	
 	public void deleteBookDetails(String id) {
 		bookStore.remove(id);
+		db.deleteBook(id);
 	}
 	
 	public void displayBook() {
@@ -39,10 +42,12 @@ public class DataStore {
 		if(customerBook.containsKey(userName)) {
 			customerBookSelect.add(customerBookDetails);
 			customerBook.put(userName, customerBookSelect);
+			bookStore.remove(customerBookDetails.getBookId());
 		} else {
 			customerBookSelect = new ArrayList<CustomerBookDetails>();
 			customerBookSelect.add(customerBookDetails);
 			customerBook.put(userName, customerBookSelect);
+			bookStore.remove(customerBookDetails.getBookId());
 		}
 	}
 	
@@ -65,6 +70,13 @@ public class DataStore {
 					if(i.getValue().get(j).getBookId().equals(bookId)) { 
 							if(i.getValue().get(j).getDueDate().compareTo(currentDate) < 0) {
 								System.out.println("Book Returned Successfully!!!");
+								Book book = new Book();
+								book.setId(bookId);
+								book.setName(i.getValue().get(j).getBookName());
+								book.setAuthor(i.getValue().get(j).getBookAuthor());
+								book.setSamplePages(i.getValue().get(j).getSamplePage());
+								book.setTotalPages(i.getValue().get(j).getTotalPage());
+								bookStore.put(bookId, book);
 								customerBookSelect.remove(j);
 							} else {
 								System.out.println("You have To Pay money");
