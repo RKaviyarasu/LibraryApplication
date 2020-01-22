@@ -26,12 +26,12 @@ public class GettingInput {
 		return bufferedReader.readLine();
 	}
 	
-	public String getBookName() throws IOException {
+	public String getBookName() {
 		String bookName = null;
 		try {
 			System.out.println("Enter the Book Name: ");
 			bookName = bufferedReader.readLine();
-		}catch(InputMismatchException e) {
+		}catch(IOException e) {
 			System.out.println("Enter the input");
 			getBookName();
 		}
@@ -44,28 +44,26 @@ public class GettingInput {
 		 return (bookAuthor.equals(""))?getBookAuthor() : bookAuthor; 
 	}
 	
-	public String getBookSamplePages() throws Exception {
+	public String getBookSamplePages() throws NumberFormatException {
 		int bookSamplePages = 0;
 		try {
 			System.out.println("Enter the Book Sample Pages: ");
 			bookSamplePages = Integer.parseInt(bufferedReader.readLine());
 		} catch(Exception e) {
-			System.out.println("Enter the correct sample Pages");
-			getBookSamplePages();
+			System.out.println("Enter the correct input");
 		}
-		return bookSamplePages + "";
+		return (bookSamplePages != 0) ? bookSamplePages+"" : getBookSamplePages();
 	}
 	
-	public String getBookTotalPages() {
+	public String getBookTotalPages() throws NumberFormatException {
 		int totalPages = 0;
 		try {
 			System.out.println("Enter the Book Total Pages: ");
 			totalPages = Integer.parseInt(bufferedReader.readLine());
 		} catch(Exception e) {
-			System.out.println("Enter the correct Total Pages");
-			getBookTotalPages();
+			System.out.println("Enter the correct input");
 		}
-		return totalPages + "";
+		return  (totalPages != 0) ? totalPages+"" :getBookTotalPages();
 	}
 	
 	public String getBookId() throws Exception {
@@ -88,7 +86,8 @@ public class GettingInput {
 	
 	public String getLastName() throws Exception {
 		System.out.println("Enter the Last Name: ");
-		return bufferedReader.readLine();
+		String lastName = bufferedReader.readLine();
+		return (lastName.equals("")) ? getLastName() : lastName;
 	}
 	
 }

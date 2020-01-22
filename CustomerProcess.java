@@ -28,6 +28,9 @@ public class CustomerProcess {
 				customerBookDetails.setUserName(userName);
 				customerBookDetails.setBookId(bookId);
 				customerBookDetails.setBookName(dataStore.bookStore.get(bookId).getName());
+				customerBookDetails.setBookAuthor(dataStore.bookStore.get(bookId).getAuthor());
+				customerBookDetails.setSamplePage(dataStore.bookStore.get(bookId).getSamplePages());
+				customerBookDetails.setTotalPage(dataStore.bookStore.get(bookId).getTotalPages());
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 				Calendar calendar = Calendar.getInstance();
 				calendar.add(Calendar.DAY_OF_MONTH,30);
@@ -45,17 +48,22 @@ public class CustomerProcess {
 	}
 	
 	public void bookReturn(String userName) throws Exception {
-		if(dataStore.customerBookSelect.size() > 0) {
-			dataStore.viewCustomerBooks(userName);
-			String bookId = gettingInput.getBookId();
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-			Calendar calendar = Calendar.getInstance();
-			String currentDate = simpleDateFormat.format(calendar.getTime()).toString();
-			//check
-			dataStore.customerBookReturn(bookId, userName, currentDate);
-		} else {
+		try {
+			if(dataStore.customerBookSelect.size() > 0) {
+				dataStore.viewCustomerBooks(userName);
+				String bookId = gettingInput.getBookId();
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				Calendar calendar = Calendar.getInstance();
+				String currentDate = simpleDateFormat.format(calendar.getTime()).toString();
+				//check
+				dataStore.customerBookReturn(bookId, userName, currentDate);
+			} else {
+				System.out.println("You are not Taking any Books");
+			}
+		}catch(Exception e) {
 			System.out.println("You are not Taking any Books");
 		}
+		
 		
 	}
 	

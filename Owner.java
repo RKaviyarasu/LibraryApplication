@@ -6,86 +6,92 @@ public class Owner {
 	
 	GettingInput gettingInput;
 	DataStore dataStore;
-	
-	public Owner(GettingInput gettingInput, DataStore dataStore) {
+	DataBaseConnection db;
+	public Owner(GettingInput gettingInput, DataStore dataStore, DataBaseConnection db) {
 		this.gettingInput = gettingInput;
 		this.dataStore = dataStore;
+		this.db = db;
 	}
 	
-	Book book = new Book();
+	
 	
 	public void insertBook() throws Exception {
-		book.setId(UUID.randomUUID().toString());
-		book.setName(gettingInput.getBookName());
-		book.setAuthor(gettingInput.getBookAuthor());
-		book.setTotalPages(gettingInput.getBookTotalPages());
+		String bookId = UUID.randomUUID().toString();
+		String bookName = gettingInput.getBookName();
+		String bookAuthor = gettingInput.getBookAuthor();
+		String totalPage = gettingInput.getBookTotalPages();
+		Book book = new Book();
+		book.setId(bookId);
+		book.setName(bookName);
+		book.setAuthor(bookAuthor);
+		book.setTotalPages(totalPage);
 		book.setSamplePages(gettingInput.getBookSamplePages());
 		while(Integer.parseInt(book.getTotalPages()) < Integer.parseInt(book.getSamplePages())) {
 			System.out.println("total page is less then sample page");
 			book.setSamplePages(gettingInput.getBookSamplePages());
 		}
 		System.out.println("Book Inserted Successfully");
-		dataStore.addBookDetails(book);
+		db.addBooks(book);
 	}
 	
 	public void updateBook() throws Exception {
-		if(dataStore.bookStore.size() > 0) {
-			dataStore.displayBook();
-			if(dataStore.bookStore.size() > 0) {
-				String bookId = gettingInput.getBookId();
-				if(dataStore.bookStore.containsKey(bookId)) {
-					updateChoice(bookId);
-				} else {
-					System.out.println("Enter the correct bookId");
-				}
+		if(db.checkEmpty()) {
+			db.bookView();
+			String bookId = gettingInput.getBookId();
+			if(db.checkId(bookId)) {
+				updateChoice(bookId);
 			} else {
-				System.out.println("Book is not Here");
+				System.out.println("Enter the correct bookId");
 			}
 		} else {
-			System.out.println("No Books are Here in the Library");
+			System.out.println("Book is not Here");
 		}
 	}
 	
 	public void updateChoice(String bookId) throws Exception {
-		System.out.println("1. Book Name \n2. Book Author \n3. Book Sample Pages \n4. Book Total Pages \nEnter your Choice: ");
-		Book updateBook = dataStore.bookStore.get(bookId);
-		switch(gettingInput.getUserChoice()) {
-		case "1":
-			updateBook.setName(gettingInput.getBookName());
-			break;
-		case "2":
-			updateBook.setAuthor(gettingInput.getBookAuthor());
-			break;
-		case "3":
-			updateBook.setSamplePages(gettingInput.getBookSamplePages());
-			break;
-		case "4":
-			updateBook.setTotalPages(gettingInput.getBookTotalPages());
-			break;
-		default:
-			System.out.println("Invalid Choice!!!!");
-			break;
-		}
-		System.out.println("Book Updated Successfully");
-		dataStore.updateBookDetails(bookId, updateBook);
+		do {
+			System.out.println("1. Book Name \n2. Book Author \n3. Book Sample Pages \n4. Book Total Pages \nEnter your Choice: ");
+			Book updateBook = db.bookData(bookId);
+			switch(gettingInput.getUserChoice()) {
+			case "1":
+				updateBook.setName(gettingInput.getBookName());
+				break;
+			case "2":
+				updateBook.setAuthor(gettingInput.getBookAuthor());
+				break;
+			case "3":
+				updateBook.setSamplePages(gettingInput.getBookSamplePages());
+				while(Integer.parseInt(updateBook.getTotalPages()) < Integer.parseInt(updateBook.getSamplePages())) {
+					System.out.println("total page is less then sample page");
+					updateBook.setSamplePages(gettingInput.getBookSamplePages());
+				}
+				break;
+			case "4":
+				updateBook.setTotalPages(gettingInput.getBookTotalPages());
+				break;
+			default:
+				System.out.println("Invalid Choice!!!!");
+				break;
+			}
+			System.out.println("Book Updated Successfully");
+			db.updateBook(bookId, updateBook);
+			System.out.println("Do you want update this book yes press 1 otherwise you are exit from current opereration");
+		} while(gettingInput.getExitChoice().equals("1"));
+		
 	}
 	
 	public void deleteBook() throws Exception {
-		if(dataStore.bookStore.size() > 0) {
-			dataStore.displayBook();
-			if(dataStore.bookStore.size() > 0) {
-				String bookId = gettingInput.getBookId();
-				if(dataStore.bookStore.containsKey(bookId)) {
-					dataStore.deleteBookDetails(bookId);
-					System.out.println("Book Deleted Successfully");
-				} else {
-					System.out.println("Enter the correct Book Id");
-				}
+		if(db.checkEmpty()) {
+			db.bookView();
+			String bookId = gettingInput.getBookId();
+			if(db.checkId(bookId)) {
+				db.deleteBook(bookId);
+				System.out.println("Book Deleted Successfully");
 			} else {
-				System.out.println("Book is not Here");
+				System.out.println("Enter the correct Book Id");
 			}
 		} else {
-			System.out.println("No Books are Here in the Library");
+			System.out.println("Book is not Here");
 		}
 	}
 	
@@ -106,8 +112,8 @@ public class Owner {
 	}
 	
 	public void viewBooks() {
-		if(dataStore.bookStore.size() > 0) {
-			dataStore.displayBook();
+		if(db.checkEmpty()) {
+			db.bookView();
 		} else {
 			System.out.println("No Books are Here in the Library");
 		}

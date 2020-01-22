@@ -13,17 +13,14 @@ public class DataStore {
 	DataBaseConnection db = new DataBaseConnection();
 	public void addBookDetails(Book book) {
 		bookStore.put(book.getId(),  book);
-		db.addBooks(book);
 	}
 	
 	public void updateBookDetails(String id, Book updateBook) {
 		bookStore.put(id, updateBook);
-		db.updateBook(id, updateBook);
 	}
 	
 	public void deleteBookDetails(String id) {
 		bookStore.remove(id);
-		db.deleteBook(id);
 	}
 	
 	public void displayBook() {
